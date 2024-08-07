@@ -207,4 +207,4 @@ class WebSocketWithHeartbeat {
     }
 }
 
-export default WebSocketWithHeartbeat
+export { WebSocketWithHeartbeat as CreateWebSocket }
