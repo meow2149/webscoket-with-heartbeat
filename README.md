@@ -17,7 +17,7 @@ const socket = createWebSocket('https://example.com')
 socket.onopen = () => {
     console.log('WebSocket connection established')
 }
-socket.onmessage = (event: Event) => {
+socket.onmessage = (event: MessageEvent) => {
     const data = event.data
     console.log('WebSocket message received:', data)
 }
