@@ -1,16 +1,16 @@
-# webSocket-Heartbeat
+# webSocketWithHeartbeat
 
 ## Description
-`webSocket-Heartbeat` is a simple project to demonstrate a WebSocket connection with a heartbeat mechanism.
+`webSocketWithHeartbeat` is a simple project to demonstrate a WebSocket connection with a heartbeat mechanism.
 
 ## Installation
 ```sh
-npm install --save websocket-heartbeat
+npm install --save websocketwithheartbeat
 ```
 
 ## Usage
 ```javascript
-import createWebSocket from 'websocket-heartbeat'
+import createWebSocket from 'webSocketWithHeartbeat'
 
 const socket = createWebSocket('https://example.com')
 
