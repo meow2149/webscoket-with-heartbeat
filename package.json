@@ -1,0 +1,28 @@
+{
+  "name": "websocketwithheartbeat",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meow2149/webScoketWithHeartbeat.git"
+  },
+  "keywords": [
+    "websocket",
+    "heartbeat",
+    "typescript",
+    "javascript"
+  ],
+  "author": "meow2149",
+  "license": "MIT",
+  "description": "",
+  "devDependencies": {
+    "typescript": "~5.4.0"
+  }
+}
