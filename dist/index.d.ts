@@ -107,4 +107,4 @@ declare class WebSocketWithHeartbeat {
      */
     private reconnect;
 }
-export { WebSocketWithHeartbeat as CreateWebSocket };
+export default WebSocketWithHeartbeat;

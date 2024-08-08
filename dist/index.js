@@ -194,4 +194,4 @@ var WebSocketWithHeartbeat = /** @class */ (function () {
     };
     return WebSocketWithHeartbeat;
 }());
-export { WebSocketWithHeartbeat as CreateWebSocket };
+export default WebSocketWithHeartbeat;
