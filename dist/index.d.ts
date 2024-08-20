@@ -19,13 +19,12 @@ interface WebSocketOptions {
  * @description 封装了带心跳机制和重连功能的 WebSocket 客户端类。
  */
 declare class WebSocketWithHeartbeat {
-    private readonly url;
-    private readonly wsUrl;
     private readonly heartbeatInterval;
     private readonly reconnectInterval;
     private readonly heartbeatMessage;
     private readonly maxReconnectAttempts;
     private readonly debug;
+    private readonly url;
     private heartbeatTimer;
     private reconnectTimer;
     private reconnectAttempts;
@@ -40,14 +39,6 @@ declare class WebSocketWithHeartbeat {
      * @param {WebSocketOptions} [options={}] - 可选配置对象，用于覆盖默认配置。
      */
     constructor(url: string, options?: WebSocketOptions);
-    /**
-     * @private
-     * @method convertToWsUrl
-     * @description 将 HTTP 或 HTTPS URL 转换为 WebSocket URL。
-     * @param {string} url - 原始 URL。
-     * @returns {string} - 转换后的 WebSocket URL。
-     */
-    private convertToWsUrl;
     /**
      * @private
      * @method connect

@@ -29,14 +29,13 @@ const defaultOptions: WebSocketOptions = {
  * @description 封装了带心跳机制和重连功能的 WebSocket 客户端类。
  */
 class WebSocketWithHeartbeat {
-    private readonly url: string
-    private readonly wsUrl: string
-
     private readonly heartbeatInterval: number
     private readonly reconnectInterval: number
     private readonly heartbeatMessage: string
     private readonly maxReconnectAttempts: number
     private readonly debug: boolean
+
+    private readonly url: string
 
     private heartbeatTimer: number | null = null
     private reconnectTimer: number | null = null
@@ -55,25 +54,13 @@ class WebSocketWithHeartbeat {
      */
     constructor(url: string, options: WebSocketOptions = {}) {
         const config = { ...defaultOptions, ...options }
-        this.url = url
-        this.wsUrl = this.convertToWsUrl(this.url)
         this.heartbeatInterval = config.heartbeatInterval!
         this.reconnectInterval = config.reconnectInterval!
         this.heartbeatMessage = config.heartbeatMessage!
         this.maxReconnectAttempts = config.maxReconnectAttempts!
         this.debug = config.debug!
+        this.url = url.replace(/^http/, 'ws')
         this.connect()
-    }
-
-    /**
-     * @private
-     * @method convertToWsUrl
-     * @description 将 HTTP 或 HTTPS URL 转换为 WebSocket URL。
-     * @param {string} url - 原始 URL。
-     * @returns {string} - 转换后的 WebSocket URL。
-     */
-    private convertToWsUrl(url: string): string {
-        return url.replace(/^http/, 'ws')
     }
 
     /**
@@ -82,7 +69,7 @@ class WebSocketWithHeartbeat {
      * @description 建立 WebSocket 连接，并绑定事件回调函数。
      */
     private connect() {
-        this.ws = new WebSocket(this.wsUrl)
+        this.ws = new WebSocket(this.url)
         this.ws.onopen = () => this.onOpen()
         this.ws.onmessage = (event) => this.onMessage(event)
         this.ws.onclose = () => this.onClose()
