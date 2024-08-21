@@ -19,6 +19,7 @@ interface WebSocketOptions {
  * @description 封装了带心跳机制和重连功能的 WebSocket 客户端类。
  */
 declare class WebSocketWithHeartbeat {
+    private static instance;
     private readonly heartbeatInterval;
     private readonly reconnectInterval;
     private readonly heartbeatMessage;
@@ -97,5 +98,13 @@ declare class WebSocketWithHeartbeat {
      * @description 尝试重连 WebSocket。
      */
     private reconnect;
+    /**
+     * @public
+     * @method getInstance
+     * @description 获取 WebSocketWithHeartbeat 实例。
+     * @param {string} url - 服务器的 URL，支持 HTTP HTTPS WS WSS协议。
+     * @param {WebSocketOptions} [options={}] - 可选配置对象，用于覆盖默认配置。
+     */
+    static getInstance(url: string, options?: WebSocketOptions): WebSocketWithHeartbeat;
 }
 export default WebSocketWithHeartbeat;
