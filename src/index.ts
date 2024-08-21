@@ -29,6 +29,7 @@ const defaultOptions: WebSocketOptions = {
  * @description 封装了带心跳机制和重连功能的 WebSocket 客户端类。
  */
 class WebSocketWithHeartbeat {
+    private static instance: WebSocketWithHeartbeat | null = null
     private readonly heartbeatInterval: number
     private readonly reconnectInterval: number
     private readonly heartbeatMessage: string
@@ -191,6 +192,20 @@ class WebSocketWithHeartbeat {
         } else {
             if (this.debug) console.warn('达到最大重连次数，停止重连')
         }
+    }
+
+    /**
+     * @public
+     * @method getInstance
+     * @description 获取 WebSocketWithHeartbeat 实例。
+     * @param {string} url - 服务器的 URL，支持 HTTP HTTPS WS WSS协议。
+     * @param {WebSocketOptions} [options={}] - 可选配置对象，用于覆盖默认配置。
+     */
+    public static getInstance(url: string, options: WebSocketOptions = {}): WebSocketWithHeartbeat {
+        if (!WebSocketWithHeartbeat.instance) {
+            WebSocketWithHeartbeat.instance = new WebSocketWithHeartbeat(url, options)
+        }
+        return WebSocketWithHeartbeat.instance
     }
 }
 

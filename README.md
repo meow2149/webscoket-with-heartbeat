@@ -13,6 +13,8 @@ npm install --save websocketwithheartbeat
 import WebSocketWithHeartbeat from 'webSocketWithHeartbeat'
 
 const socket = new WebSocketWithHeartbeat('https://example.com')
+// if you need to create multiple instances, use getInstance()
+const socket = WebSocketWithHeartbeat.getInstance('https://example.com')
 
 socket.onopen = () => {
     console.log('WebSocket connection established')
