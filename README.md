@@ -5,12 +5,17 @@
 
 ## Installation
 ```sh
-npm install --save websocketwithheartbeat
+npm install --save websocket-with-heartbeat
 ```
 
 ## Usage
 ```javascript
-import WebSocketWithHeartbeat from 'webSocketWithHeartbeat'
+// 1.ES Module
+import WebSocketWithHeartbeat from 'websocket-with-heartbeat'
+// 2.CommonJS
+const WebSocketWithHeartbeat = require('websocket-with-heartbeat')
+// 3.CDN
+<script src="https://cdn.jsdelivr.net/npm/websocket-with-heartbeat/dist/websocket-with-heartbeat.min.js"></script>
 
 const socket = new WebSocketWithHeartbeat('https://example.com')
 

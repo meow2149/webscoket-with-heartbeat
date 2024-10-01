@@ -1,11 +1,11 @@
 {
-  "name": "websocketwithheartbeat",
-  "version": "0.0.8",
+  "name": "websocket-with-heartbeat",
+  "version": "0.0.9",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "prettier --write src/ && tsc",
+    "build": "prettier --write src/ && rmdir /s /q dist && rollup -c",
     "format": "prettier --write src/"
   },
   "files": [
@@ -13,7 +13,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/meow2149/webScoketWithHeartbeat.git"
+    "url": "git+https://github.com/meow2149/webscoket-with-heartbeat.git"
   },
   "keywords": [
     "websocket",
@@ -25,7 +25,11 @@
   "license": "MIT",
   "description": "",
   "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.0",
     "prettier": "^3.3.3",
+    "rollup": "^4.23.0",
+    "tslib": "^2.7.0",
     "typescript": "~5.4.0"
   }
 }
