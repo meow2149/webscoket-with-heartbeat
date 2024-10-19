@@ -11,11 +11,11 @@
  // * @property {boolean} [singleton=false] - 是否为单例模式，默认为 false。
  */
 interface WebSocketOptions {
-    heartbeatInterval: number;
-    reconnectInterval: number;
-    maxReconnectAttempts: number;
-    maxReconnectInterval: number;
-    debug: boolean;
+    heartbeatInterval?: number;
+    reconnectInterval?: number;
+    maxReconnectAttempts?: number;
+    maxReconnectInterval?: number;
+    debug?: boolean;
 }
 /**
  * @class WebSocketWithHeartbeat
@@ -23,7 +23,7 @@ interface WebSocketOptions {
  */
 declare class WebSocketWithHeartbeat {
     private readonly heartbeatInterval;
-    private reconnectInterval;
+    private readonly reconnectInterval;
     private readonly maxReconnectAttempts;
     private readonly maxReconnectInterval;
     private readonly debug;

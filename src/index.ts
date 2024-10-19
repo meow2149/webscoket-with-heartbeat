@@ -11,12 +11,12 @@
  // * @property {boolean} [singleton=false] - 是否为单例模式，默认为 false。
  */
 interface WebSocketOptions {
-  heartbeatInterval: number
-  reconnectInterval: number
-  maxReconnectAttempts: number
-  maxReconnectInterval: number
+  heartbeatInterval?: number
+  reconnectInterval?: number
+  maxReconnectAttempts?: number
+  maxReconnectInterval?: number
   // timeout: number
-  debug: boolean
+  debug?: boolean
   // heartbeatInitiator: 'client' | 'server'
   // singleton: boolean
 }
@@ -36,7 +36,7 @@ interface WebSocketMessage {
  * @constant defaultOptions
  * @description 默认配置项。
  */
-const defaultOptions: WebSocketOptions = {
+const defaultOptions = {
   heartbeatInterval: 30 * 1000,
   reconnectInterval: 5 * 1000,
   maxReconnectAttempts: 0,
@@ -55,7 +55,7 @@ class WebSocketWithHeartbeat {
   // private static instance: WebSocketWithHeartbeat | null = null
 
   private readonly heartbeatInterval: number
-  private reconnectInterval: number
+  private readonly reconnectInterval: number
   private readonly maxReconnectAttempts: number
   private readonly maxReconnectInterval: number
   // private readonly timeout: number
