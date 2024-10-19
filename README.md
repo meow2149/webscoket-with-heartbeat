@@ -5,7 +5,7 @@
 
 ## Installation
 ```sh
-npm install --save websocket-with-heartbeat
+npm install websocket-with-heartbeat
 ```
 
 ## Usage
@@ -41,36 +41,27 @@ socket.send('Hello, WebSocket!')
 /**
  * @interface WebSocketOptions
  * @description 配置 WebSocketWithHeartbeat 实例的可选项。
- * @property {number} [heartbeatInterval=30000] - 心跳间隔时间，单位为毫秒，默认为 30000。
- * @property {number} [reconnectInterval=5000] - 重连间隔时间，单位为毫秒，默认为 5000。
+ * @property {number} [heartbeatInterval=30000] - 心跳间隔时间，单位为毫秒，默认为 30s。
+ * @property {number} [reconnectInterval=5000] - 重连间隔时间，单位为毫秒，默认为 5s。
  * @property {number} [maxReconnectAttempts=0] - 最大重连次数，默认为 0 表示无限制。
- * @property {number} [maxReconnectInterval=5000] - 最大重连间隔时间，单位为毫秒，默认为 5000。
- * @property {number} [timeout=5000] - 超时时间，单位为毫秒，默认为 5000。
+ * @property {number} [maxReconnectInterval=5000] - 最大重连间隔时间，单位为毫秒，默认为 5s。
  * @property {boolean} [debug=false] - 开启 debug 模式后将打印日志, 默认为 false。
- * @property {'client' | 'server'} [heartbeatInitiator='client'] - 心跳发起方，默认为 'client'。
- * @property {boolean} [singleton=false] - 是否为单例模式，默认为 false。
  */
 interface WebSocketOptions {
     heartbeatInterval: number
     reconnectInterval: number
     maxReconnectAttempts: number
     maxReconnectInterval: number
-    timeout: number
     debug: boolean
-    heartbeatInitiator: 'client' | 'server'
-    singleton: boolean
 }
 ```
 ### Defaults
 ```javascript
 const defaultOptions: WebSocketOptions = {
-    heartbeatInterval: 1000 * 30,
-    reconnectInterval: 1000 * 5,
+    heartbeatInterval: 30 * 1000,
+    reconnectInterval: 5 * 1000,
     maxReconnectAttempts: 0,
-    maxReconnectInterval: 1000 * 5,
-    timeout: 1000 * 5,
+    maxReconnectInterval: 5 * 1000,
     debug: false,
-    heartbeatInitiator: 'client',
-    singleton: false
 }
 ```

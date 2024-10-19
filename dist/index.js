@@ -9,35 +9,35 @@
      * @description 默认配置项。
      */
     const defaultOptions = {
-        heartbeatInterval: 1000 * 30,
-        reconnectInterval: 1000 * 5,
+        heartbeatInterval: 30 * 1000,
+        reconnectInterval: 5 * 1000,
         maxReconnectAttempts: 0,
-        maxReconnectInterval: 1000 * 5,
-        timeout: 1000 * 5,
-        debug: false,
-        heartbeatInitiator: 'client',
-        singleton: false
+        maxReconnectInterval: 5 * 1000,
+        // timeout: 1000 * 5,
+        debug: false
+        // heartbeatInitiator: 'client',
+        // singleton: false
     };
     /**
      * @class WebSocketWithHeartbeat
      * @description 封装了带心跳机制和重连功能的 WebSocket 客户端类。
      */
     class WebSocketWithHeartbeat {
-        static instance = null;
+        // private static instance: WebSocketWithHeartbeat | null = null
         heartbeatInterval;
         reconnectInterval;
         maxReconnectAttempts;
         maxReconnectInterval;
-        timeout;
+        // private readonly timeout: number
         debug;
-        heartbeatInitiator;
-        singleton;
+        // private readonly heartbeatInitiator: 'client' | 'server'
+        // private readonly singleton: boolean
         url;
         heartbeatTimer = null;
-        heartbeatCheckTimer = null;
+        // private heartbeatCheckTimer: ReturnType<typeof setTimeout> | null = null
         reconnectTimer = null;
         reconnectAttempts = 0;
-        initialReconnectInterval;
+        // private readonly initialReconnectInterval: number
         ws = null;
         onopen = () => { };
         onmessage = () => { };
@@ -46,23 +46,23 @@
         /**
          * @constructor
          * @param {string} url - 服务器的 URL，支持 HTTP HTTPS WS WSS协议。
-         * @param {Partial<WebSocketOptions>} [options={}] - 可选配置对象，用于覆盖默认配置。
+         * @param {WebSocketOptions} options - 配置项。
          */
-        constructor(url, options = {}) {
+        constructor(url, options) {
             const config = { ...defaultOptions, ...options };
             this.heartbeatInterval = config.heartbeatInterval;
             this.reconnectInterval = config.reconnectInterval;
             this.maxReconnectAttempts = config.maxReconnectAttempts;
             this.maxReconnectInterval = config.maxReconnectInterval;
-            this.timeout = config.timeout;
+            // this.timeout = config.timeout
             this.debug = config.debug;
-            this.heartbeatInitiator = config.heartbeatInitiator;
-            this.singleton = config.singleton;
+            // this.heartbeatInitiator = config.heartbeatInitiator
+            // this.singleton = config.singleton
             this.url = url.replace(/^http/, 'ws');
-            this.initialReconnectInterval = this.reconnectInterval;
-            if (this.singleton && WebSocketWithHeartbeat.instance) {
-                return WebSocketWithHeartbeat.instance;
-            }
+            // this.initialReconnectInterval = this.reconnectInterval
+            // if (this.singleton && WebSocketWithHeartbeat.instance) {
+            //   return WebSocketWithHeartbeat.instance
+            // }
             this.connect();
         }
         /**
@@ -86,13 +86,12 @@
             this.onopen();
             this.log('WebSocket连接已建立');
             this.reconnectAttempts = 0;
-            this.reconnectInterval = this.initialReconnectInterval;
-            if (this.heartbeatInitiator === 'client') {
-                this.startHeartbeat();
-            }
-            else {
-                this.startHeartbeatCheck();
-            }
+            // this.reconnectInterval = this.initialReconnectInterval
+            // if (this.heartbeatInitiator === 'client') {
+            this.startHeartbeat();
+            // } else {
+            //   this.startHeartbeatCheck()
+            // }
         }
         /**
          * @private
@@ -104,13 +103,12 @@
             try {
                 const message = JSON.parse(event.data);
                 this.log('收到服务器消息:', message);
-                if (message.type === 'heartbeat') {
-                    if (this.heartbeatInitiator === 'client') {
-                        this.resetHeartbeat();
-                    }
-                    else {
-                        this.resetHeartbeatCheck();
-                    }
+                if (message.type === 'pong') {
+                    // if (this.heartbeatInitiator === 'client') {
+                    this.resetHeartbeat();
+                    // } else {
+                    //   this.resetHeartbeatCheck()
+                    // }
                 }
                 else {
                     this.onmessage(event);
@@ -166,26 +164,25 @@
             this.heartbeatTimer = setInterval(() => {
                 if (this.ws?.readyState === WebSocket.OPEN) {
                     const message = {
-                        type: 'heartbeat',
-                        data: 'ping'
+                        type: 'ping'
                     };
                     this.ws.send(JSON.stringify(message));
                     this.log('发送心跳消息:', message);
                 }
             }, this.heartbeatInterval);
         }
-        /**
-         * @private
-         * @method startHeartbeatCheck
-         * @description 启动心跳检测，定期检测是否接收到心跳消息。
-         */
-        startHeartbeatCheck() {
-            this.stopHeartbeatCheck();
-            this.heartbeatCheckTimer = setTimeout(() => {
-                this.log('心跳超时，连接断开，尝试重连...');
-                this.onClose();
-            }, this.heartbeatInterval + this.timeout);
-        }
+        // /**
+        //  * @private
+        //  * @method startHeartbeatCheck
+        //  * @description 启动心跳检测，定期检测是否接收到心跳消息。
+        //  */
+        // private startHeartbeatCheck() {
+        //   this.stopHeartbeatCheck()
+        //   this.heartbeatCheckTimer = setTimeout(() => {
+        //     this.log('心跳超时，连接断开，尝试重连...')
+        //     this.onClose()
+        //   }, this.heartbeatInterval + this.timeout)
+        // }
         /**
          * @private
          * @method resetHeartbeat
@@ -195,15 +192,15 @@
             this.stopHeartbeat();
             this.startHeartbeat();
         }
-        /**
-         * @private
-         * @method resetHeartbeatCheck
-         * @description 重置心跳检测。
-         */
-        resetHeartbeatCheck() {
-            this.stopHeartbeatCheck();
-            this.startHeartbeatCheck();
-        }
+        // /**
+        //  * @private
+        //  * @method resetHeartbeatCheck
+        //  * @description 重置心跳检测。
+        //  */
+        // private resetHeartbeatCheck() {
+        //   this.stopHeartbeatCheck()
+        //   this.startHeartbeatCheck()
+        // }
         /**
          * @private
          * @method stopHeartbeat
@@ -215,17 +212,17 @@
                 this.heartbeatTimer = null;
             }
         }
-        /**
-         * @private
-         * @method stopHeartbeatCheck
-         * @description 停止心跳检测。
-         */
-        stopHeartbeatCheck() {
-            if (this.heartbeatCheckTimer !== null) {
-                clearTimeout(this.heartbeatCheckTimer);
-                this.heartbeatCheckTimer = null;
-            }
-        }
+        // /**
+        //  * @private
+        //  * @method stopHeartbeatCheck
+        //  * @description 停止心跳检测。
+        //  */
+        // private stopHeartbeatCheck() {
+        //   if (this.heartbeatCheckTimer !== null) {
+        //     clearTimeout(this.heartbeatCheckTimer)
+        //     this.heartbeatCheckTimer = null
+        //   }
+        // }
         /**
          * @private
          * @method cleanup
@@ -233,7 +230,7 @@
          */
         cleanup() {
             this.stopHeartbeat();
-            this.stopHeartbeatCheck();
+            // this.stopHeartbeatCheck()
             if (this.reconnectTimer !== null) {
                 clearTimeout(this.reconnectTimer);
                 this.reconnectTimer = null;
@@ -260,7 +257,10 @@
                 if (this.reconnectTimer === null) {
                     this.reconnectTimer = setTimeout(() => {
                         this.reconnectAttempts++;
-                        this.reconnectInterval = Math.min((this.reconnectInterval += this.initialReconnectInterval), this.maxReconnectInterval);
+                        // this.reconnectInterval = Math.min(
+                        //   (this.reconnectInterval += this.initialReconnectInterval),
+                        //   this.maxReconnectInterval
+                        // )
                         this.connect();
                         this.reconnectTimer = null;
                     }, this.reconnectInterval);
