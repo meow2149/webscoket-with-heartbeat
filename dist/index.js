@@ -42,26 +42,26 @@
         send(data) {
             if (this.webSocket?.readyState === WebSocket.OPEN) {
                 this.webSocket.send(data);
-                this.debugLog('Sent:', data);
+                this.debugLog('Message sent:', data);
             }
         }
         close() {
-            this.debugLog('Disconnect manually.');
+            this.debugLog('Manual disconnection initiated.');
             this.isManualClosed = true;
             this.webSocket?.close();
             this.stopHeartbeat();
         }
         // Custom WebSocket API
         onOpen(ev) {
-            this.debugLog('Connected.');
+            this.debugLog('Connection established.');
             this.onopen(ev);
             this.startHeartbeat();
         }
         onMessage(ev) {
-            this.debugLog('Received:', ev.data);
+            this.debugLog('Message received:', ev.data);
             const data = JSON.parse(ev.data);
             if (data.type === this.heartbeat.pong) {
-                this.debugLog('Closing cancelled.');
+                this.debugLog('Heartbeat response received. Connection maintained.');
                 clearTimeout(this.preCloseTimer);
                 this.preCloseTimer = undefined;
             }
@@ -70,7 +70,7 @@
             }
         }
         onClose(event) {
-            this.debugLog('Disconnected.');
+            this.debugLog('Connection closed.');
             this.onclose(event);
             if (!this.isManualClosed) {
                 this.stopHeartbeat();
@@ -78,14 +78,16 @@
             }
         }
         onError(error) {
-            this.debugLog('Error occurred:', error);
+            this.debugLog('An error occurred:', error);
             this.onerror(error);
         }
         // Other methods
         startHeartbeat() {
             this.heartbeatTimer = setInterval(() => {
                 if (this.webSocket?.readyState === WebSocket.OPEN) {
-                    this.webSocket.send(JSON.stringify({ type: this.heartbeat.ping }));
+                    const data = JSON.stringify({ type: this.heartbeat.ping });
+                    this.webSocket.send(data);
+                    this.debugLog('Message sent:', data);
                     this.preClose();
                 }
             }, this.options.heartbeatInterval);
@@ -96,7 +98,7 @@
         }
         reconnect() {
             this.reconnectTimer = setTimeout(() => {
-                this.debugLog('Reconnecting...');
+                this.debugLog('Attempting to reconnect...');
                 this.connect();
                 this.stopReconnect();
             }, this.options.reconnectDelay);
@@ -106,7 +108,7 @@
             this.reconnectTimer = undefined;
         }
         preClose() {
-            this.debugLog(`Closing in ${this.options.timeout}ms...`);
+            this.debugLog(`No heartbeat response. Closing connection in ${this.options.timeout}ms...`);
             this.preCloseTimer = setTimeout(() => {
                 this.webSocket?.close();
                 clearTimeout(this.preCloseTimer);
