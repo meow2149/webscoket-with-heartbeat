@@ -74,7 +74,8 @@ class WebSocketWithHeartbeat {
     const data: WebSocketMessage = JSON.parse(ev.data)
     if (data.type === this.heartbeat.pong) {
       this.debugLog('Closing cancelled.')
-      this.stopPreClose()
+      clearTimeout(this.preCloseTimer)
+      this.preCloseTimer = undefined
     } else {
       this.onmessage(ev)
     }
@@ -120,12 +121,9 @@ class WebSocketWithHeartbeat {
     this.debugLog(`Closing in ${this.options.timeout}ms...`)
     this.preCloseTimer = setTimeout(() => {
       this.webSocket?.close()
-      this.stopPreClose()
+      clearTimeout(this.preCloseTimer)
+      this.preCloseTimer = undefined
     }, this.options.timeout)
-  }
-  private stopPreClose() {
-    clearTimeout(this.preCloseTimer)
-    this.preCloseTimer = undefined
   }
   private debugLog(...data: any[]) {
     if (this.options.debug) {
