@@ -62,7 +62,8 @@
             const data = JSON.parse(ev.data);
             if (data.type === this.heartbeat.pong) {
                 this.debugLog('Closing cancelled.');
-                this.stopPreClose();
+                clearTimeout(this.preCloseTimer);
+                this.preCloseTimer = undefined;
             }
             else {
                 this.onmessage(ev);
@@ -108,12 +109,9 @@
             this.debugLog(`Closing in ${this.options.timeout}ms...`);
             this.preCloseTimer = setTimeout(() => {
                 this.webSocket?.close();
-                this.stopPreClose();
+                clearTimeout(this.preCloseTimer);
+                this.preCloseTimer = undefined;
             }, this.options.timeout);
-        }
-        stopPreClose() {
-            clearTimeout(this.preCloseTimer);
-            this.preCloseTimer = undefined;
         }
         debugLog(...data) {
             if (this.options.debug) {

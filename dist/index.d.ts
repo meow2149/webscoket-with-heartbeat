@@ -30,7 +30,6 @@ declare class WebSocketWithHeartbeat {
     private reconnect;
     private stopReconnect;
     private preClose;
-    private stopPreClose;
     private debugLog;
 }
 export default WebSocketWithHeartbeat;
