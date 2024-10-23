@@ -60,7 +60,7 @@
         onMessage(ev) {
             this.debugLog('Message received:', ev.data);
             const data = JSON.parse(ev.data);
-            if (data.type === this.heartbeat.pong) {
+            if (data.type === this.heartbeat.pong && this.preCloseTimer) {
                 this.debugLog('Heartbeat response received. Connection maintained.');
                 clearTimeout(this.preCloseTimer);
                 this.preCloseTimer = undefined;
