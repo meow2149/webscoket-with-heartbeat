@@ -56,14 +56,17 @@ var WebSocketWithHeartbeat = (function () {
         }
         onMessage(ev) {
             this.debugLog('Message received:', ev.data);
-            const data = JSON.parse(ev.data);
-            if (data.type === this.heartbeat.pong && this.preCloseTimer) {
-                this.debugLog('Heartbeat response received. Connection maintained.');
-                clearTimeout(this.preCloseTimer);
-                this.preCloseTimer = undefined;
-            }
-            else {
-                this.onmessage(ev);
+            if (ev.data instanceof ArrayBuffer) {
+                const decoder = new TextDecoder();
+                const data = JSON.parse(decoder.decode(ev.data));
+                if (data.type === this.heartbeat.pong && this.preCloseTimer) {
+                    this.debugLog('Heartbeat response received. Connection maintained.');
+                    clearTimeout(this.preCloseTimer);
+                    this.preCloseTimer = undefined;
+                }
+                else {
+                    this.onmessage(ev);
+                }
             }
         }
         onClose(event) {
@@ -82,7 +85,8 @@ var WebSocketWithHeartbeat = (function () {
         startHeartbeat() {
             this.heartbeatTimer = setInterval(() => {
                 if (this.webSocket?.readyState === WebSocket.OPEN) {
-                    const data = JSON.stringify({ type: this.heartbeat.ping });
+                    const encoder = new TextEncoder();
+                    const data = encoder.encode(JSON.stringify({ type: this.heartbeat.ping }));
                     this.webSocket.send(data);
                     this.debugLog('Message sent:', data);
                     this.preClose();

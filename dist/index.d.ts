@@ -19,7 +19,7 @@ declare class WebSocketWithHeartbeat {
     onmessage: (ev: MessageEvent) => void;
     onclose: (ev: CloseEvent) => void;
     onerror: (ev: Event) => void;
-    send(data: string): void;
+    send(data: ArrayBuffer): void;
     close(): void;
     private onOpen;
     private onMessage;
