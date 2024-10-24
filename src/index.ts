@@ -50,7 +50,7 @@ class WebSocketWithHeartbeat {
   public onmessage: (ev: MessageEvent) => void = () => {}
   public onclose: (ev: CloseEvent) => void = () => {}
   public onerror: (ev: Event) => void = () => {}
-  public send(data: ArrayBuffer) {
+  public send(data: string) {
     if (this.webSocket?.readyState === WebSocket.OPEN) {
       this.webSocket.send(data)
       this.debugLog('Message sent:', data)
@@ -71,16 +71,13 @@ class WebSocketWithHeartbeat {
   }
   private onMessage(ev: MessageEvent) {
     this.debugLog('Message received:', ev.data)
-    if (ev.data instanceof ArrayBuffer) {
-      const decoder = new TextDecoder()
-      const data: WebSocketMessage = JSON.parse(decoder.decode(ev.data))
-      if (data.type === this.heartbeat.pong && this.preCloseTimer) {
-        this.debugLog('Heartbeat response received. Connection maintained.')
-        clearTimeout(this.preCloseTimer)
-        this.preCloseTimer = undefined
-      } else {
-        this.onmessage(ev)
-      }
+    const data: WebSocketMessage = JSON.parse(ev.data)
+    if (data.type === this.heartbeat.pong && this.preCloseTimer) {
+      this.debugLog('Heartbeat response received. Connection maintained.')
+      clearTimeout(this.preCloseTimer)
+      this.preCloseTimer = undefined
+    } else {
+      this.onmessage(ev)
     }
   }
   private onClose(event: CloseEvent) {
@@ -100,8 +97,7 @@ class WebSocketWithHeartbeat {
   private startHeartbeat() {
     this.heartbeatTimer = setInterval(() => {
       if (this.webSocket?.readyState === WebSocket.OPEN) {
-        const encoder = new TextEncoder()
-        const data = encoder.encode(JSON.stringify({ type: this.heartbeat.ping }))
+        const data = JSON.stringify({ type: this.heartbeat.ping })
         this.webSocket.send(data)
         this.debugLog('Message sent:', data)
         this.preClose()
