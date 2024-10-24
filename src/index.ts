@@ -1,11 +1,11 @@
-interface WebSocketOptions {
+export interface WebSocketOptions {
   heartbeatInterval?: number
   reconnectDelay?: number
   timeout?: number
   debug?: boolean
 }
 
-interface WebSocketMessage {
+export interface WebSocketMessage {
   type: string
   [key: string]: any
 }

@@ -1,8 +1,12 @@
-interface WebSocketOptions {
+export interface WebSocketOptions {
     heartbeatInterval?: number;
     reconnectDelay?: number;
     timeout?: number;
     debug?: boolean;
+}
+export interface WebSocketMessage {
+    type: string;
+    [key: string]: any;
 }
 declare class WebSocketWithHeartbeat {
     private readonly options;
