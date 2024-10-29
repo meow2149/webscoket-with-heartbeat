@@ -25,6 +25,7 @@ var WebSocketWithHeartbeat = (function () {
             this.connect();
         }
         connect() {
+            this.cleanup();
             this.webSocket = new WebSocket(this.url);
             this.webSocket.onopen = this.onOpen.bind(this);
             this.webSocket.onmessage = this.onMessage.bind(this);
@@ -45,8 +46,7 @@ var WebSocketWithHeartbeat = (function () {
         close() {
             this.debugLog('Manual disconnection initiated.');
             this.isManualClosed = true;
-            this.webSocket?.close();
-            this.stopHeartbeat();
+            this.cleanup();
         }
         // Custom WebSocket API
         onOpen(ev) {
@@ -68,9 +68,9 @@ var WebSocketWithHeartbeat = (function () {
         }
         onClose(event) {
             this.debugLog('Connection closed.');
+            this.cleanup();
             this.onclose(event);
             if (!this.isManualClosed) {
-                this.stopHeartbeat();
                 this.reconnect();
             }
         }
@@ -80,24 +80,34 @@ var WebSocketWithHeartbeat = (function () {
         }
         // Other methods
         startHeartbeat() {
-            this.heartbeatTimer = setInterval(() => {
-                if (this.webSocket?.readyState === WebSocket.OPEN) {
-                    const data = JSON.stringify({ type: this.heartbeat.ping });
-                    this.webSocket.send(data);
-                    this.debugLog('Message sent:', data);
-                    this.preClose();
-                }
-            }, this.options.heartbeatInterval);
+            this.stopHeartbeat(); // Make sure to stop any existing heartbeat, especially in development
+            if (this.webSocket?.readyState === WebSocket.OPEN) {
+                this.heartbeatTimer = setInterval(() => {
+                    this.sendHeartbeat();
+                }, this.options.heartbeatInterval);
+            }
+        }
+        sendHeartbeat() {
+            if (this.webSocket?.readyState === WebSocket.OPEN) {
+                const data = JSON.stringify({ type: this.heartbeat.ping });
+                this.webSocket.send(data);
+                this.debugLog('Heartbeat sent:', data);
+                this.preClose();
+            }
+            else {
+                this.stopHeartbeat();
+            }
         }
         stopHeartbeat() {
             clearInterval(this.heartbeatTimer);
             this.heartbeatTimer = undefined;
         }
         reconnect() {
+            this.stopReconnect();
             this.reconnectTimer = setTimeout(() => {
                 this.debugLog('Attempting to reconnect...');
+                this.isManualClosed = false; // 重置手动关闭标志
                 this.connect();
-                this.stopReconnect();
             }, this.options.reconnectDelay);
         }
         stopReconnect() {
@@ -111,6 +121,24 @@ var WebSocketWithHeartbeat = (function () {
                 clearTimeout(this.preCloseTimer);
                 this.preCloseTimer = undefined;
             }, this.options.timeout);
+        }
+        cleanup() {
+            this.stopHeartbeat();
+            this.stopReconnect();
+            if (this.preCloseTimer) {
+                clearTimeout(this.preCloseTimer);
+                this.preCloseTimer = undefined;
+            }
+            if (this.webSocket) {
+                this.webSocket.onopen = null;
+                this.webSocket.onmessage = null;
+                this.webSocket.onclose = null;
+                this.webSocket.onerror = null;
+                if (this.webSocket.readyState === WebSocket.OPEN) {
+                    this.webSocket.close();
+                }
+                this.webSocket = null;
+            }
         }
         debugLog(...data) {
             if (this.options.debug) {
