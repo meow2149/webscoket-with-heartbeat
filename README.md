@@ -1,10 +1,14 @@
-# webSocketWithHeartbeat
+# WebSocketWithHeartbeat
 
-## Description
-`webSocketWithHeartbeat` is a simple and lightweight library for WebSocket with a built-in heartbeat mechanism. It ensures stable and persistent WebSocket connections by periodically sending ping messages to the server and reconnecting when necessary.
+A TypeScript WebSocket client wrapper with built-in heartbeat mechanism and auto-reconnection support.
 
-## Principle
-The client sends a ping message to the server every `heartbeatInterval` milliseconds. If the client doesn't receive a pong response within a certain time (`timeout`), it assumes the connection is broken and attempts to reconnect automatically.
+## Features
+- Automatic heartbeat detection (`ping`/`pong`)
+- Auto-reconnection on connection loss
+- Page visibility-based connection management
+- Strict message type checking
+- Support for JSON/binary message format
+- Full TypeScript support
 
 ## Installation
 ```sh
@@ -12,71 +16,95 @@ npm install websocket-with-heartbeat
 ```
 
 ## Usage
-```javascript
-// 1. ES Module
-import WebSocketWithHeartbeat from 'websocket-with-heartbeat'
 
-// 2. CommonJS
-const WebSocketWithHeartbeat = require('websocket-with-heartbeat')
+### Basic Example
+```typescript
+import WebSocketWithHeartbeat, { WebSocketMessage } from 'websocket-with-heartbeat'
 
-// 3. CDN
-<script src="https://cdn.jsdelivr.net/npm/websocket-with-heartbeat/dist/websocket-with-heartbeat.min.js"></script>
+// Initialize connection
+const ws = new WebSocketWithHeartbeat('wss://example.com', {
+  debug: true
+})
 
-const socket = new WebSocketWithHeartbeat('https://example.com')
-
-// Handle WebSocket events
-socket.onopen = () => {
-    console.log('WebSocket connection established')
+// Handle incoming messages
+ws.onmessage = (event) => {
+  const message: WebSocketMessage = event.data
+  switch (message.type) {
+    case 'chat':
+      console.log('Chat message:', message.content)
+      break
+    case 'notification':
+      console.log('Notification:', message.text)
+      break
+  }
 }
 
-socket.onmessage = (event: MessageEvent) => {
-    const data = event.data
-    console.log('WebSocket message received:', data)
-}
-
-socket.onclose = () => {
-    console.log('WebSocket connection closed')
-}
-
-socket.onerror = (error: Event) => {
-    console.error('WebSocket error:', error)
-}
-
-// Send a message
-socket.send(JSON.stringify({
-    type: 'example_type',
-    // ... other message properties
-}))
-
-// Manually close the WebSocket connection
-socket.close()
+// Send message
+ws.send({
+  type: 'chat',
+  content: 'Hello!',
+  timestamp: Date.now()
+})
 ```
 
-## Configuration
-
-### Interface
-
-```javascript
-interface WebSocketOptions {
-    heartbeatInterval: number // Time interval between heartbeat pings (in ms)
-    reconnectDelay: number    // Delay after disconnection (in ms)
-    timeout: number           // Timeout for receiving a pong response (in ms)
-    debug: boolean            // Enable/disable debug logging
-}
-
+### Message Type Definition
+All messages must follow the `WebSocketMessage` interface:
+```typescript
 interface WebSocketMessage {
-  type: string       // Message type, e.g., 'ping', 'pong', etc.
-  [key: string]: any // Message payload
+  type: string;
+  [key: string]: any;
 }
 ```
 
-### Defaults
+**Note:** The `type` field is required for all messages. Messages not following this format will be rejected.
 
-```javascript
-const defaultOptions: WebSocketOptions = {
-    heartbeatInterval: 30 * 1000, // 30 seconds
-    reconnectDelay: 5 * 1000,     // 5 seconds
-    timeout: 5 * 1000,            // 5 seconds 
-    debug: false                  // Debug logging disabled by default
+### Reserved Message Types
+- `ping`: Used internally for heartbeat requests
+- `pong`: Used internally for heartbeat responses
+
+### Configuration Options
+```typescript
+interface WebSocketOptions {
+  heartbeatInterval?: number;  // Heartbeat interval (default: 30000ms)
+  reconnectDelay?: number;     // Delay before reconnection attempts (default: 5000ms)
+  timeout?: number;            // Heartbeat timeout (default: 5000ms)
+  debug?: boolean;             // Enable debug logs (default: false)
+  messageType?: 'json' | 'binary';  // Message format (default: 'json')
 }
 ```
+
+### Event Handlers
+```typescript
+ws.onopen = (event: Event) => {
+  console.log('Connected')
+}
+
+ws.onmessage = (event: { data: WebSocketMessage }) => {
+  // Note: event is not a native MessageEvent
+  console.log('Message received:', event.data)
+}
+
+ws.onclose = (event: CloseEvent) => {
+  console.log('Disconnected')
+}
+
+ws.onerror = (event: Event) => {
+  console.log('Error occurred')
+}
+```
+
+### Connection Management
+```typescript
+// Manual close
+ws.close()
+
+// Connection automatically manages based on page visibility:
+// - Connects when page becomes visible
+// - Disconnects when page becomes hidden
+```
+
+### Debug Mode
+When `debug: true` is set, the library will log detailed connection and message information to the console.
+
+## License
+MIT
