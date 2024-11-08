@@ -18,5 +18,6 @@ declare class WebSocketWithHeartbeat {
     onerror: (ev: Event) => void;
     send(data: WebSocketMessage): void;
     close(): void;
+    connect(): void;
 }
 export default WebSocketWithHeartbeat;

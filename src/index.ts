@@ -32,15 +32,6 @@ class WebSocketWithHeartbeat {
   constructor(url: string, options?: WebSocketOptions) {
     this.#options = { ...defaultOptions, ...options }
     this.#url = url.replace(/^http/, 'ws')
-    this.#connect()
-    document.addEventListener('visibilitychange', () => {
-      this.#isPageVisible = document.visibilityState === 'visible'
-      if (this.#isPageVisible) {
-        this.#connect()
-      } else {
-        this.#destroy()
-      }
-    })
   }
 
   #connect() {
@@ -80,6 +71,12 @@ class WebSocketWithHeartbeat {
     this.#debugLog('Manual disconnection initiated.')
     this.#isManualClosed = true
     this.#destroy()
+  }
+
+  // Manual connection
+  connect() {
+    this.#isManualClosed = false
+    this.#connect()
   }
 
   // Custom WebSocket API

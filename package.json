@@ -1,11 +1,11 @@
 {
   "name": "websocket-with-heartbeat",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "prettier --write src/ && rmdir /s /q dist && rollup -c",
+    "build": "prettier --write src/ && rollup -c",
     "format": "prettier --write src/"
   },
   "files": [
