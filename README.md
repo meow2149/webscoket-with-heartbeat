@@ -21,10 +21,13 @@ npm install websocket-with-heartbeat
 ```typescript
 import WebSocketWithHeartbeat, { WebSocketMessage } from 'websocket-with-heartbeat'
 
-// Initialize connection
+// Initialize
 const ws = new WebSocketWithHeartbeat('wss://example.com', {
   debug: true
 })
+
+// Manual connection
+ws.connect()
 
 // Handle incoming messages
 ws.onmessage = (event) => {
